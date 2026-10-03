@@ -30,3 +30,7 @@ El script verifica archivos/contadores/huellas, no calidad semántica de tests n
 compatibilidad de contrato. Revisa esos aspectos y presenta evidencia humana.
 Solo usa LOCAL_VERIFIED cuando gates locales requeridos pasan y aceptación está
 cubierta; mantén pendientes de config manual/CI y revisión final por separado.
+Dentro del agente completo, entrega este resultado al orquestador: debe ejecutar
+`backend.py workflow-close` después de memoria/entrega antes de cerrar el cambio.
+El PASS de calidad por sí solo no acredita las demás fases. En uso individual,
+reporta el alcance solicitado sin activar el flujo completo.

@@ -507,10 +507,128 @@ def metrics(repo, base):
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
+PHASE_SKILLS = {
+    1: {"backend-contexto", "backend-evidencias"}, 2: {"backend-plan"},
+    3: {"backend-contrato"}, 4: {"backend-implementacion"},
+    5: {"backend-pruebas-unitarias", "backend-karate"},
+    6: {"backend-config-manual"}, 7: {"backend-calidad"},
+    8: {"backend-memoria", "backend-commits"},
+}
+
+
+def workflow_artifact(repo, relative):
+    path = contained(repo, relative)
+    if not path.is_file() or not path.stat().st_size:
+        raise ValueError("Evidencia ausente/vacía: " + relative)
+    return {"path": path.relative_to(repo).as_posix(), "sha256": sha(path)}
+
+
+def workflow(repo, args):
+    """Consistency gate, not a sandbox or a semantic/human-authorization checker."""
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}", args.task):
+        raise ValueError("task inválida")
+    folder = repo / ".assistant-local/backend/workflows" / args.task
+    path = folder / "workflow.json"
+    if args.action == "workflow-start":
+        if path.exists():
+            raise ValueError("La tarea ya existe; conservar y reanudar su alcance")
+        request = workflow_artifact(repo, args.request_file)
+        text = contained(repo, args.request_file).read_text(encoding="utf-8-sig")
+        if args.mode == "individual" and (not args.scope_quote.strip() or args.scope_quote not in text):
+            raise ValueError("Modo individual requiere una cita literal del pedido que limita el alcance")
+        state = {"schemaVersion": 1, "task": args.task, "mode": args.mode,
+                 "request": request, "scopeQuote": args.scope_quote, "phases": {}, "status": "IN_PROGRESS"}
+        write_json(path, state)
+        print(json.dumps(state, ensure_ascii=False, indent=2))
+        return 0
+    state = read_json(path)
+    if args.action == "workflow-phase":
+        number = str(args.phase)
+        if args.status == "NOT_APPLICABLE" and (args.phase not in {3, 6} or not args.reason.strip()):
+            raise ValueError("Solo contrato/config permiten no aplica, con justificación")
+        if args.status == "BLOCKED" and not args.reason.strip():
+            raise ValueError("Registrar la dependencia que bloquea la fase")
+        if state["mode"] == "complete" and args.phase == 4 and args.status == "DONE":
+            if state["phases"].get("2", {}).get("status") != "DONE":
+                raise ValueError("Registrar plan antes de dar por terminada la implementación")
+        skills = []
+        for value in args.skill:
+            skill = Path(value).resolve()
+            if skill.name != "SKILL.md" or not skill.is_file() or not skill.stat().st_size:
+                raise ValueError("Ruta de SKILL.md inválida: " + value)
+            skills.append({"name": skill.parent.name, "path": str(skill), "sha256": sha(skill)})
+        evidence = [workflow_artifact(repo, value) for value in args.evidence]
+        if args.status == "DONE":
+            if not evidence:
+                raise ValueError("DONE requiere artefactos reales")
+            required = PHASE_SKILLS[args.phase] if state["mode"] == "complete" else set()
+            if not skills or not required.issubset({s["name"] for s in skills}):
+                raise ValueError("Registrar archivos de las skills requeridas por la fase")
+        state["phases"][number] = {"status": args.status, "reason": args.reason,
+                                   "skills": skills, "evidence": evidence}
+        state["status"] = "IN_PROGRESS"
+        state.pop("closure", None)
+        write_json(path, state)
+        print(json.dumps(state["phases"][number], ensure_ascii=False, indent=2))
+        return 0
+    blockers = []
+    artifacts = [state["request"]]
+    for number, phase in state["phases"].items():
+        artifacts.extend(phase["evidence"])
+        if phase["status"] == "BLOCKED":
+            blockers.append("Fase " + number + ": " + phase["reason"])
+        for skill in phase["skills"]:
+            p = Path(skill["path"])
+            if not p.is_file() or sha(p) != skill["sha256"]:
+                blockers.append("Skill cambió/desapareció: " + skill["name"])
+    for artifact in artifacts:
+        try:
+            if workflow_artifact(repo, artifact["path"]) != artifact:
+                blockers.append("Evidencia cambió: " + artifact["path"])
+        except ValueError as exc:
+            blockers.append(str(exc))
+    if state["mode"] == "complete":
+        for number in map(str, range(1, 9)):
+            if state["phases"].get(number, {}).get("status") not in {"DONE", "NOT_APPLICABLE"}:
+                blockers.append("Fase " + number + " pendiente")
+        for relative in ("docs/engineering/service-map.md", f"docs/engineering/changes/{args.task}/change.md"):
+            try:
+                workflow_artifact(repo, relative)
+            except ValueError as exc:
+                blockers.append(str(exc))
+        if not args.acceptance_evidence:
+            blockers.append("Falta evidencia de aceptación funcional")
+        else:
+            try:
+                workflow_artifact(repo, args.acceptance_evidence)
+            except ValueError as exc:
+                blockers.append(str(exc))
+        if not args.run_id:
+            blockers.append("Falta run-id para comprobar gates actuales")
+        else:
+            try:
+                if verify(repo, args.run_id):
+                    blockers.append("Gates locales no aprobados")
+            except (ValueError, KeyError, TypeError, OSError, ET.ParseError) as exc:
+                blockers.append("Verificación bloqueada: " + str(exc))
+        status = "BLOCKED" if blockers else "LOCAL_VERIFIED"
+    else:
+        if not any(p["status"] == "DONE" for p in state["phases"].values()):
+            blockers.append("Ninguna capacidad terminada con evidencia")
+        status = "BLOCKED" if blockers else "SCOPED_TASK_DONE"
+    state["status"] = status
+    state["closure"] = {"status": status, "blockers": blockers,
+                        "runId": args.run_id, "acceptanceEvidence": args.acceptance_evidence,
+                        "limits": "No prueba lectura cognitiva, intención humana, semántica de artefactos ni despliegue; revisar evidencia"}
+    write_json(path, state)
+    print(json.dumps(state["closure"], ensure_ascii=False, indent=2))
+    return 1 if blockers else 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
-    for action in ("snapshot", "run", "verify", "metrics", "doctor"):
+    for action in ("snapshot", "run", "verify", "metrics", "doctor", "workflow-start", "workflow-phase", "workflow-close"):
         command = sub.add_parser(action)
         command.add_argument("--repo", required=True)
         if action == "snapshot":
@@ -522,9 +640,26 @@ def main():
             command.add_argument("--check", required=True)
         if action == "metrics":
             command.add_argument("--base", required=True)
+        if action.startswith("workflow-"):
+            command.add_argument("--task", required=True)
+        if action == "workflow-start":
+            command.add_argument("--request-file", required=True)
+            command.add_argument("--mode", choices=["complete", "individual"], default="complete")
+            command.add_argument("--scope-quote", default="")
+        if action == "workflow-phase":
+            command.add_argument("--phase", type=int, choices=range(1, 9), required=True)
+            command.add_argument("--status", choices=["DONE", "NOT_APPLICABLE", "BLOCKED"], required=True)
+            command.add_argument("--evidence", action="append", default=[])
+            command.add_argument("--skill", action="append", default=[])
+            command.add_argument("--reason", default="")
+        if action == "workflow-close":
+            command.add_argument("--run-id")
+            command.add_argument("--acceptance-evidence")
     args = parser.parse_args()
     try:
         repo = repo_root(args.repo)
+        if args.action.startswith("workflow-"):
+            return workflow(repo, args)
         if args.action == "snapshot":
             value = snapshot(repo)
             if args.compare:

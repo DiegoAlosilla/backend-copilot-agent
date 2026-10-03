@@ -1,7 +1,7 @@
 {
   "name": "backend-java",
   "description": "Agente y skills para backend Java con calidad verificable y configuración manual por ambiente.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "agents": "./agents",
   "skills": "./skills",
   "keywords": ["java", "quarkus", "karate", "backend", "copilot"]

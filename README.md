@@ -1,6 +1,6 @@
 # Backend Java Agent para GitHub Copilot
 
-Versión **0.4.0**: un agente principal y **15 skills** para cambios Java completos
+Versión **0.5.0**: un agente principal y **15 skills** para cambios Java completos
 o tareas individuales. Usa Quarkus/Spring y la arquitectura real del repositorio.
 
 ## Cómo usarlo
@@ -9,7 +9,7 @@ Seleccionar **backend-java** en Copilot y escribir la solicitud en texto normal.
 **No hace falta un prompt ni un slash para iniciar un cambio completo.**
 
 ```text
-Modo completo. Este UX devuelve error genérico cuando Business informa que no
+Este UX devuelve error genérico cuando Business informa que no
 se encontró lo buscado. Debe responder HTTP 204 sin cuerpo solo en ese escenario.
 Adjunto logs y contrato. Corrige el problema y completa las fases con pruebas,
 clean install, cobertura y memoria. Muéstrame la skill cargada y evidencia de
@@ -52,6 +52,21 @@ preparación o evidencia, el modo completo queda `BLOCKED`, conservando los avan
 `SCOPED_TASK_DONE` corresponde exclusivamente a una tarea individual.
 CI/revisión humana/traslado de configuración y producción se reportan aparte.
 
+Desde 0.5.0 el agente registra el alcance y las fases mediante `backend.py
+workflow-start`, `workflow-phase` y `workflow-close`. El último comando rechaza
+un cierre completo con fases ausentes, artefactos modificados o gates pendientes,
+y vuelve a verificar las ejecuciones actuales. El registro está en
+`.assistant-local/backend/workflows/<tarea>/workflow.json`.
+Un modo individual requiere una cita del pedido que limita el alcance;
+el agente no debe inventarla a partir de su anuncio de auditoría.
+
+Estos controles operan **cuando se ejecutan**: el plugin de instrucciones no
+intercepta todas las respuestas de Copilot ni puede impedir que omita un comando.
+Un cierre sin resultado del verificador no acredita finalización. Los hashes
+prueban consistencia de archivos, no que el modelo entendió una skill, que una cita
+proviene realmente del humano o que las pruebas cubren el comportamiento correcto.
+El desarrollador revisa la aceptación y las evidencias antes de aprobar el cambio.
+
 Una skill contiene instrucciones: Copilot puede cargarla con una herramienta
 nativa o leyendo el SKILL.md. Eso no crea necesariamente un subagente ni una
 burbuja idéntica en todas las versiones. La carga real, las acciones y sus
@@ -79,7 +94,7 @@ artefactos sí deben poder comprobarse.
 
 4. Abrir la raíz Git del microservicio y seleccionar **backend-java**.
 
-Para pasar desde 0.3.0 a 0.4.0, ejecutar **Extensions: Check for Extension Updates**,
+Para pasar desde una versión anterior a 0.5.0, ejecutar **Extensions: Check for Extension Updates**,
 comprobar la versión y abrir un chat nuevo. El comando `backend-cambio.prompt` se
 retiró: usar el agente directamente. Si persiste un comando antiguo, comprobar
 que la actualización llegó y que no hay copias del workspace ocultando el plugin.

@@ -10,6 +10,10 @@ Trabaja en la raíz Git del microservicio abierto, conserva el modelo selecciona
 por el desarrollador y respeta sus reglas, permisos y cambios ajenos.
 Inspecciona git status y diff antes de editar para distinguir cambios propios
 de cambios previos; no descubras esa distinción solamente al cerrar.
+Una descripción de fallo con resultado esperado es una solicitud de corrección:
+inicia el flujo completo. Diagnosticar es la primera actividad, no un cambio de modo.
+Para limitar el alcance, cita las palabras del desarrollador que lo delimitan;
+tu propio resumen, una memoria previa o el anuncio de auditoría no son esa evidencia.
 Un arreglo funcional no termina el flujo completo: faltan pruebas, calidad y
 memoria hasta que exista evidencia. No instales herramientas globales ni asumas
 acceso a Grafana, repos externos, Jenkins o producción.
@@ -61,6 +65,27 @@ Registra la trazabilidad en `docs/engineering/changes/<tarea>/change.md`, usando
 el template CAMBIO: modo, fase, skills, carga, resultado, rutas/comandos y pendientes.
 La preparación es una precondición, no una fase que sustituya al cambio.
 
+Tras preparar soporte, guarda solamente el pedido actual del desarrollador en
+`.assistant-local/backend/<tarea>/request.txt` (sin adjuntos/logs ni secretos).
+Ejecuta `backend.py workflow-start --repo <raíz> --task <tarea> --request-file <ruta>`.
+El modo predeterminado es complete; individual requiere `--mode individual
+--scope-quote <cita literal que limita el pedido>`. Conserva esta decisión al reanudar;
+no abras otra tarea para eludir pendientes. La copia del pedido debe ser fiel,
+sin convertir “corrige” en “solo diagnostica”. Si no puedes registrar el pedido,
+mantén el alcance humano y reporta el control pendiente, sin afirmar cierre verificado.
+
+Después de leer cada SKILL.md con herramientas y terminar una fase, ejecuta
+`backend.py workflow-phase --repo <raíz> --task <tarea> --phase <n> --status DONE
+--skill <ruta real al SKILL.md> --evidence <artefacto relativo al servicio>`;
+repite --skill/--evidence según corresponda. Este comando registra hashes;
+no carga las instrucciones en tu contexto ni demuestra que las comprendiste.
+Contrato/config permiten NOT_APPLICABLE con --reason; bloqueos se registran con
+BLOCKED y --reason. Los artefactos deben describir acciones/resultados reales,
+no repetir las instrucciones ni afirmar resultados sin sus reportes.
+Prefiere artefactos por fase que se conserven sin cambios (plan.md, evidencia de
+pruebas, etc.). La bitácora en construcción puede cambiar: vuelve a registrar
+una fase si cambia su evidencia legítimamente; no edites hashes para forzar el cierre.
+
 | Fase | Skills que debes cargar | Resultado necesario |
 | --- | --- | --- |
 | 1. Contexto y evidencias | [contexto](../skills/backend-contexto/SKILL.md), [evidencias](../skills/backend-evidencias/SKILL.md) | Flujo real, perfil, causas/hipótesis y baseline viable |
@@ -84,6 +109,11 @@ continúa con fases independientes y conserva lo pendiente.
 ## Comprobar antes de cerrar
 
 En modo completo, lee nuevamente el registro de fases y la verificación actual.
+Ejecuta `backend.py workflow-close --repo <raíz> --task <tarea> --run-id <run>
+--acceptance-evidence <ruta relativa a evidencia del escenario>` y utiliza su
+resultado. Revalida gates desde sus ejecuciones; no acepta un PASS escrito a mano.
+En modo individual omite run-id/acceptance-evidence si son ajenos al pedido.
+Si no ejecutaste este cierre, indica control pendiente y no LOCAL_VERIFIED.
 Solo entrega `LOCAL_VERIFIED` si aceptación y gates aplicables tienen evidencia
 vigente y la memoria está actualizada. Si código/config/entorno cambió después de
 los checks, repite los afectados. No inventes porcentaje de cobertura ni un PASS.
@@ -98,6 +128,10 @@ Si los logs no contienen la señal funcional que activa el mapeo esperado, disti
 corrección defensiva de causa demostrada. Prueba el request representativo en el
 límite HTTP antes de declarar que el incidente quedó resuelto. Un 404 genérico
 no prueba un código de negocio ni autoriza devolver 204.
+Un diff local no identifica la versión desplegada: contrasta imagen/commit de DEV
+antes de afirmar que falta el arreglo. Un test fallido no es automáticamente
+“desactualizado”: decide con contrato/criterio esperado si el defecto está en código
+o prueba. No recomiendes desplegar una corrección con gates requeridos pendientes.
 **SCOPED_TASK_DONE está reservado al modo individual.** DIAGNOSED corresponde a
 una solicitud de diagnóstico. Un estado de una skill interna no cambia el modo
 ni sustituye la verificación final del orquestador.

@@ -116,6 +116,31 @@ presenta resultado del check y `SCOPED_TASK_DONE`, con gates ajenos NOT_RUN.
 
 ## Estado y documentación
 
+El agente inicia un expediente ejecutable después de preparar el soporte. Ejemplo
+(reemplazar tarea/rutas; comandos Python con biblioteca estándar):
+
+```powershell
+py -3 -S engineering/backend/scripts/backend.py workflow-start --repo . --task CAMBIO-1 --request-file .assistant-local/backend/CAMBIO-1/request.txt
+py -3 -S engineering/backend/scripts/backend.py workflow-phase --repo . --task CAMBIO-1 --phase 2 --status DONE --skill '<ruta real>/backend-plan/SKILL.md' --evidence docs/engineering/changes/CAMBIO-1/plan.md
+py -3 -S engineering/backend/scripts/backend.py workflow-close --repo . --task CAMBIO-1 --run-id CAMBIO-1 --acceptance-evidence '<reporte o documento del escenario>'
+```
+
+El pedido se guarda localmente, fiel al texto humano, sin logs/secretos. Modo
+complete predeterminado; individual solo con --mode individual --scope-quote
+literal del pedido que delimita alcance. El script comprueba la cita contra el
+archivo, no puede autenticar su origen humano. No reenviar ese archivo al repo.
+Las fases DONE necesitan artefactos no vacíos y archivos de skills; contrato/config
+permiten NOT_APPLICABLE con --reason. BLOCKED necesita la dependencia concreta.
+En modo completo el cierre comprueba ocho fases, hashes de evidencias/skills,
+mapa/bitácora y evidencia de aceptación; vuelve a ejecutar verify del run indicado.
+En modo individual basta la capacidad solicitada con evidencias vigentes;
+no exige gates ajenos. Reanudar el mismo expediente, sin sustituir su alcance.
+
+El registro no demuestra lectura cognitiva ni corrección semántica de artefactos.
+No impide que Copilot omita herramientas: sin resultado de workflow-close no
+declarar LOCAL_VERIFIED. La UI puede mostrar lectura de archivos en lugar de
+invocación nativa; registrar rutas, no simular llamadas a skills.
+
 State del chat: `.assistant-local/backend/<ticket>/state.json`, con modo, fase, próximo
 paso, archivos propios y bloqueos. Evidencia: `runs/<run-id>`, generada por runner.
 Compartido: `docs/engineering/service-map.md`, metadata de snapshot y expediente

@@ -1,5 +1,17 @@
 # Cambios
 
+## 0.5.0 — 3 de octubre de 2026
+
+- Expediente ejecutable de alcance/fases y cierre con revalidación de gates.
+- Modo completo predeterminado; individual requiere cita literal del pedido.
+- Evidencias/skills registradas con hashes, motivos de no aplica limitados a
+  contrato/config y cierre bloqueado con fases/artefactos pendientes.
+- Plan registrado antes de implementación y bitácora/mapa presentes al cierre.
+- Distingue hipótesis sobre DEV, pruebas fallidas y recomendaciones de despliegue.
+- 53 pruebas locales aprobaron, incluidas 11 de alcance/cierre/reanudación.
+- No intercepta respuestas de Copilot: controles efectivos cuando se ejecutan;
+  aceptación semántica y origen humano del pedido requieren revisión.
+
 ## 0.4.0 — 3 de octubre de 2026
 
 - Entrada única: seleccionar backend-java y describir el cambio. Retirado el

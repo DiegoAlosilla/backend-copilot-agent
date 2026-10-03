@@ -66,3 +66,24 @@ probadas necesitan su propia verificación.
 
 Formatos contrastados con documentación oficial de VS Code/Copilot enlazada en
 README. No se copiaron skills externas ni se instalaron herramientas de la organización.
+
+## 0.5.0: control del flujo tras el segundo piloto
+
+El segundo log suministrado describe una auditoría individual, revisión de cambios
+existentes, 9 pruebas focalizadas aprobadas y clean install fallido. No contiene
+el pedido original ni evidencia suficiente de carga de skills o de ocho fases.
+No se confirma qué commit/imagen estaba desplegado ni que la prueba fallida fuese
+obsoleta. No se incorporaron logs, rutas ni contenido del servicio a este paquete.
+
+Se añadieron workflow-start/phase/close al runtime existente, sin dependencias.
+53 pruebas locales con Python y -S aprobaron: las 42 existentes y 11 del flujo.
+Las nuevas verifican alcance conservado, cita requerida para individual, fases
+pendientes, evidencia modificada, skill/artefacto faltante, plan previo, límites
+de no aplica, gates reales del runner con build fallido y código modificado.
+El escenario positivo usa reportes sintéticos; no valida aceptación del caso UX.
+
+Los controles verifican consistencia cuando se ejecutan. No autentican el origen
+humano del pedido, no prueban lectura cognitiva de skills ni contenido semántico
+de documentos. Copilot puede omitir instrucciones: el siguiente piloto debe mostrar
+workflow-start, registro de fases y workflow-close. Sin ellos no se acredita cierre.
+No se ejecutó Copilot de la otra máquina ni se corrigió el microservicio desde aquí.
