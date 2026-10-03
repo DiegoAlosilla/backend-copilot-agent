@@ -1,6 +1,6 @@
 # Distribuir el agente desde Git
 
-Versión de distribución 0.3.0. La rama destinada a instalación debe contener
+Versión de distribución 0.4.0. La rama destinada a instalación debe contener
 únicamente versiones revisadas. Mantener cambios de desarrollo en ramas feature;
 proteger la rama estable con PR y checks según la plataforma Git.
 
@@ -22,7 +22,8 @@ La disponibilidad depende de VS Code/extensión y política de la organización.
 servicio que se ejecute cuando VS Code está cerrado.
 [Instalación y actualización de plugins](https://code.visualstudio.com/docs/agent-customization/agent-plugins).
 
-Seleccionar `backend-java` y abrir un chat nuevo tras actualizar. Las skills también
+Seleccionar `backend-java` y escribir el cambio sin prompt; abrir un chat nuevo
+tras actualizar. En 0.4.0 no hay `backend-cambio.prompt`. Las skills también
 se pueden ejecutar individualmente. El plugin contiene el agente y las skills;
 el microservicio conserva su perfil, política y documentación. La primera sesión
 usa `/backend-preparar-repo` para instalar soporte en el repo con `-SupportOnly`.
@@ -57,7 +58,7 @@ distribuye privado; no incrustar PAT en URL o settings.
 Para moverlo sin un remoto disponible se entrega un Git bundle:
 
 ```powershell
-git clone 'D:\ruta\backend-copilot-agent-v0.3.0.bundle' backend-copilot-agent
+git clone 'D:\ruta\backend-copilot-agent-v0.4.0.bundle' backend-copilot-agent
 ```
 
 El bundle conserva historial/etiqueta. Para instalar/actualizar desde VS Code
@@ -81,10 +82,11 @@ marketplace corporativo posteriormente; este MVP se instala desde su URL Git.
 
 ## Organización del paquete
 
-`plugin.json` utiliza el formato Copilot con paths explícitos a agentes, skills y
-commands. Así `.github` sigue siendo fuente única para plugin e instalación por
-archivos, sin mantener copias divergentes. Su compatibilidad se comprueba con el
-cliente corporativo. [Referencia del formato Copilot](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference).
+`plugin.json` usa el formato Copilot con las carpetas convencionales `agents/`,
+`skills/` y `rules/`. No hay comandos/prompt para el flujo completo. La instalación
+por archivos mapea agentes/skills a `.github` del servicio y las reglas a un
+bloque de copilot-instructions; no duplica fuentes en el repo del paquete.
+[Referencia del formato Copilot](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference).
 
 CI del repo del agente valida el paquete; no despliega microservicios ni lee
 secretos empresarials. Ajustar runners e índices de dependencias de desarrollo si

@@ -45,7 +45,7 @@ fuente de contrato primero y regenerar; no modificar interfaz generada.
 ## Primer mensaje listo para usar
 
 ```text
-/backend-cambio Corrige el manejo de respuesta en este microservicio UX.
+Modo completo. Corrige el manejo de respuesta en este microservicio UX.
 Cuando Business indica que no encontró lo buscado en el escenario descrito,
 UX debe responder HTTP 204 sin cuerpo; actualmente devuelve error genérico.
 Usa los logs/MD/archivos de referencia que adjunto. Determina la condición exacta

@@ -1,4 +1,4 @@
-# Validación de la entrega 0.3.0
+# Validación de la entrega 0.4.0
 
 Fecha: 3 de octubre de 2026. Ejecutado en Windows con Python 3.14 y PowerShell 7.
 
@@ -31,17 +31,29 @@ Cobertura de los ensayos (no es porcentaje JaCoCo):
 - Frontmatter plano: scalars del paquete y rechazo explícito de formas no
   soportadas/duplicadas. El validador no necesita un parser YAML externo.
 
-Se comprobó el frontmatter de las **15 skills**, agente y prompt, además de JSON,
+Se comprobó el frontmatter de las **15 skills**, agente y reglas, además de JSON,
 nombres, referencias internas y sintaxis Python. Todos los scripts/checks usan
 biblioteca estándar. `py -3 -S distribution/check_package.py` pasó.
 
 `distribution/check_package.py` valida el manifest Copilot y 17 definiciones
-(15 skills, agente y prompt). El workflow de CI se incluyó para ejecutar estos
-checks cuando se publique en GitHub; aún no se ejecutó en servidor remoto.
+(15 skills, agente y reglas). Los checks no prueban que un modelo aplique las
+skills ni que termine el flujo completo; esa conducta se valida en el piloto.
+La CI de 0.3.0 pasó en Windows/Python 3.10 y 3.14. El resultado de la nueva
+versión se registra en Actions y en las notas de su release.
+
+El piloto de 0.3.0 informó skills visibles en slash, una búsqueda de OPERACION.md
+sin coincidencias y un arreglo sin trazabilidad completa. Eso confirma descubrimiento
+en ese cliente; no acredita preparación ni carga/ejecución de cada skill.
+El registro de la sesión también contiene baseline clean install fallido y tests
+focalizados correctos. No contiene evidencia de cierre completo tras el cambio.
+Los logs dejan pendiente confirmar la señal funcional del request; un arreglo
+defensivo no demuestra por sí mismo resolución del incidente observado.
+0.4.0 corrige las instrucciones de alcance, carga, fases y cierre y simplifica
+la entrada. Requiere repetir el piloto para evaluar cumplimiento real.
 
 Las fixtures simulan reportes; no son pruebas de Quarkus/Karate de un servicio
-empresarial. No se probó descubrimiento en VS Code corporativo ni el modelo real,
-Maven/Artifactory, CI/Sonar o Grafana. Instalación desde fuente y ciclo automático
+empresarial. No se probaron los gates reales del servicio, Maven/Artifactory,
+CI/Sonar o Grafana. Instalación desde fuente y ciclo automático
 de actualización VS Code no se probaron en el cliente corporativo. No hay repo
 UX objetivo en este workspace.
 El caso 204 y comandos/runners deben probarse al instalar en ese repositorio.

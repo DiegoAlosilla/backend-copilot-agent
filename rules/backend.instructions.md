@@ -1,6 +1,13 @@
+---
+description: Reglas compartidas para el agente backend-java y sus skills.
+applyTo: "**"
+---
+
 # Backend Java — reglas compartidas
 
-Respeta el modo solicitado: una skill individual no activa el flujo completo. Para
+Estas reglas gobiernan backend-java y sus skills. Respeta las reglas específicas
+del microservicio y el modo solicitado. Una skill individual no activa el flujo
+completo. Para
 cambios completos utiliza `backend-java`; lee solo las skills de la fase actual.
 Si provienes del plugin y faltan recursos del repo, usa `backend-preparar-repo` antes
 de ejecutar scripts. La preparación mínima también sirve para skills individuales.

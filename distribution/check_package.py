@@ -17,7 +17,7 @@ def frontmatter(body):
     header = body[4:].split("\n---\n", 1)[0]
     result = {}
     for line in header.splitlines():
-        match = re.fullmatch(r"([a-z][a-z-]*): (.+)", line)
+        match = re.fullmatch(r"([a-z][a-zA-Z-]*): (.+)", line)
         if not match:
             raise ValueError("Only flat string frontmatter is supported")
         key, value = match.groups()
@@ -45,11 +45,13 @@ def main():
     manifest = json.loads((ROOT / "plugin.json").read_text(encoding="utf-8"))
     assert manifest["name"] == "backend-java"
     assert re.fullmatch(r"\d+\.\d+\.\d+", manifest["version"])
-    for key in ("agents", "skills", "commands"):
+    for key in ("agents", "skills"):
         path = (ROOT / manifest[key]).resolve()
         assert path.is_relative_to(ROOT) and path.is_dir(), key
-    documents = [*ROOT.glob(".github/skills/*/SKILL.md"),
-                 *ROOT.glob(".github/agents/*.md"), *ROOT.glob(".github/prompts/*.md")]
+    assert manifest["agents"] == "./agents" and manifest["skills"] == "./skills"
+    assert "commands" not in manifest, "Full flow starts with the agent, not a prompt"
+    documents = [*ROOT.glob("skills/*/SKILL.md"),
+                 *ROOT.glob("agents/*.md"), *ROOT.glob("rules/*.instructions.md")]
     for path in documents:
         body = path.read_text(encoding="utf-8")
         assert body.startswith("---\n"), path

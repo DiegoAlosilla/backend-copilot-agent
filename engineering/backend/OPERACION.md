@@ -1,4 +1,4 @@
-# Operación del MVP 0.3.0
+# Operación del MVP 0.4.0
 
 Copilot usa este repo para completar el perfil y ejecutar checks. JSON se usa en
 perfil/política para que los verificadores no dependan de librerías externas.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.4.0",
   "requiredGates": ["build", "unit", "karate", "checkstyle", "coverage"],
   "instructionMinimum": 0.95,
   "allowedSkippedTests": 0,

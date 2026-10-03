@@ -333,14 +333,14 @@ class InstallerTests(unittest.TestCase):
         source = package / "engineering/backend/OPERACION.md"
         source.write_text(source.read_text(encoding="utf-8") + "\nUpdated procedure\n", encoding="utf-8")
         plugin = backend.read_json(package / "plugin.json")
-        plugin["version"] = "0.3.1"
+        plugin["version"] = "0.4.1"
         backend.write_json(package / "plugin.json", plugin)
         second = self.install(support=True, package=package)
         self.assertEqual(second.returncode, 0, second.stderr)
         self.assertEqual(profile.read_text(), '{"myProfile":"keep"}')
         self.assertEqual(policy.read_text(), '{"myPolicy":"keep"}')
         self.assertIn("Updated procedure", (self.repo / "engineering/backend/OPERACION.md").read_text(encoding="utf-8"))
-        self.assertEqual(backend.read_json(self.repo / ".assistant-local/backend/installation.json")["packageVersion"], "0.3.1")
+        self.assertEqual(backend.read_json(self.repo / ".assistant-local/backend/installation.json")["packageVersion"], "0.4.1")
 
     def test_modified_managed_file_blocks_update_without_partial_copy(self):
         package = self.package_copy()
@@ -358,7 +358,7 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(self.install(package=package).returncode, 0)
         destination = self.repo / ".github/copilot-instructions.md"
         destination.write_text(destination.read_text(encoding="utf-8") + "\nExtra team rule\n", encoding="utf-8")
-        source = package / ".github/copilot-instructions.md"
+        source = package / "rules/backend.instructions.md"
         source.write_text(source.read_text(encoding="utf-8") + "\nNew BACKEND rule\n", encoding="utf-8")
         result = self.install(package=package)
         self.assertEqual(result.returncode, 0, result.stderr)

@@ -10,8 +10,10 @@ spec.loader.exec_module(package_check)
 
 class FrontmatterTests(unittest.TestCase):
     def test_actual_plain_and_quoted_scalars(self):
-        text = "---\nname: backend-sanity\ndescription: 'Checks: status and body; it''s scoped.'\n---\nContent\n"
-        self.assertEqual(package_check.frontmatter(text)["description"], "Checks: status and body; it's scoped.")
+        text = "---\nname: backend-sanity\ndescription: 'Checks: status and body; it''s scoped.'\napplyTo: \"**\"\n---\nContent\n"
+        parsed = package_check.frontmatter(text)
+        self.assertEqual(parsed["description"], "Checks: status and body; it's scoped.")
+        self.assertEqual(parsed["applyTo"], "**")
 
     def test_unsupported_yaml_and_duplicate_keys_fail_explicitly(self):
         for header in ("name: a\nname: b", "description: |\n  multiline", "description: [one, two]", "description: missing: quote"):

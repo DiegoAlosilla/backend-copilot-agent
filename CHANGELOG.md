@@ -1,5 +1,17 @@
 # Cambios
 
+## 0.4.0 — 3 de octubre de 2026
+
+- Entrada única: seleccionar backend-java y describir el cambio. Retirado el
+  prompt redundante cuyo nombre aparecía con sufijo .prompt en VS Code.
+- Modo completo por defecto para cambios; SCOPED_TASK_DONE solo para individuales.
+- Carga explícita de SKILL.md, anuncio de fases y registro de evidencia por fase.
+- Precondición de preparación visible y cierre BLOCKED si faltan gates/soporte.
+- Carpetas convencionales agents/skills/rules; instalador por archivos adapta
+  destinos y conserva configuración propia. Reglas compartidas como componente
+  del plugin y lectura explícita del agente.
+- README explica nombres del menú, cada carpeta y límites de los ensayos.
+
 ## 0.3.0 — 3 de octubre de 2026
 
 - Nombres y contenido genéricos; historial inicial nuevo para la distribución.

@@ -47,10 +47,10 @@ foreach ($name in $previous.Keys) { $nextMetadata[$name] = $previous[$name] }
 $sourceFiles = @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'engineering/backend') -Recurse -File |
     Where-Object { $_.FullName -notmatch '[\\/]__pycache__[\\/]' })
 if (-not $SupportOnly) {
-    foreach ($folder in @('.github/agents', '.github/skills', '.github/prompts')) {
+    foreach ($folder in @('agents', 'skills')) {
         $sourceFiles += Get-ChildItem -LiteralPath (Join-Path $packageRoot $folder) -Recurse -File
     }
-    $sourceFiles += Get-Item -LiteralPath (Join-Path $packageRoot '.github/copilot-instructions.md')
+    $sourceFiles += Get-Item -LiteralPath (Join-Path $packageRoot 'rules/backend.instructions.md')
 }
 $actions = @()
 $conflicts = @()
@@ -59,11 +59,17 @@ $end = '<!-- backend-package:end -->'
 $pattern = '(?s)<!-- backend-package:start(?: v[^>]+)? -->.*?<!-- backend-package:end -->'
 foreach ($source in $sourceFiles) {
     $relative = $source.FullName.Substring($packageRoot.Length).TrimStart('\', '/').Replace('\', '/')
+    if ($relative.StartsWith('agents/') -or $relative.StartsWith('skills/')) {
+        $relative = '.github/' + $relative
+    } elseif ($relative -eq 'rules/backend.instructions.md') {
+        $relative = '.github/copilot-instructions.md'
+    }
     $destination = [IO.Path]::GetFullPath((Join-Path $targetRoot $relative))
     Assert-TargetPath $destination
     $sourceHash = (Get-FileHash -LiteralPath $source.FullName).Hash
     if ($relative -eq '.github/copilot-instructions.md') {
         $incoming = Get-Content -LiteralPath $source.FullName -Raw -Encoding UTF8
+        $incoming = [regex]::Replace($incoming, '\A---\r?\n.*?\r?\n---\r?\n\s*', '', [Text.RegularExpressions.RegexOptions]::Singleline)
         $block = $start + "`n" + $incoming + "`n" + $end
         $blockHash = Hash-Text $block
         if (Test-Path -LiteralPath $destination) {
