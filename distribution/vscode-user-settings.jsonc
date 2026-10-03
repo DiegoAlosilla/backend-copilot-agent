@@ -1,0 +1,6 @@
+// Integrar estas claves en User Settings de VS Code; conservar las existentes.
+// El plugin se instala mediante Chat: Install Plugin From Source con la URL Git.
+{
+  "chat.plugins.enabled": true,
+  "extensions.autoUpdate": true
+}

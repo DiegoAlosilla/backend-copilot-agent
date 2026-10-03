@@ -1,0 +1,9 @@
+{
+  "name": "backend-java",
+  "description": "Agente y skills para backend Java con calidad verificable y configuración manual por ambiente.",
+  "version": "0.3.0",
+  "agents": "./.github/agents",
+  "skills": "./.github/skills",
+  "commands": "./.github/prompts",
+  "keywords": ["java", "quarkus", "karate", "backend", "copilot"]
+}

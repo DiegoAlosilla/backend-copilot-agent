@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "packageVersion": "0.3.0",
+  "requiredGates": ["build", "unit", "karate", "checkstyle", "coverage"],
+  "instructionMinimum": 0.95,
+  "allowedSkippedTests": 0,
+  "checkstyleAllowedViolations": 0,
+  "sonar": "corporate-policy-to-confirm",
+  "configurationMode": "manual",
+  "commitRules": {
+    "maxMessageLength": 72,
+    "targetCommits": 2,
+    "filesPerCommitLessThan": 15,
+    "linesPerCommitLessThan": 100,
+    "idealPrLines": 50,
+    "splitRecommendationAboveLines": 300,
+    "minimumReviewers": 3
+  }
+}

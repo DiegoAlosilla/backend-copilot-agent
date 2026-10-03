@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "service": {"name": null, "role": null, "framework": null, "javaMajor": null},
+  "toolchainFile": ".assistant-local/backend/toolchain.json",
+  "fingerprintInputs": [],
+  "commands": {},
+  "reports": {},
+  "notApplicable": {},
+  "contract": {"sources": [], "generatedPaths": [], "generator": null},
+  "configuration": {"mode": "manual", "localFiles": [], "sharedChanges": "unknown"},
+  "memory": "docs/engineering/service-map.meta.json"
+}
