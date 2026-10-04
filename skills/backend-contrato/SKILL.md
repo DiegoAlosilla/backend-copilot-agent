@@ -1,25 +1,23 @@
 ---
 name: backend-contrato
-description: Actualiza contratos HTTP o schemas de evento y regenera clases Java con el mecanismo del repositorio. Úsala cuando cambia una interfaz o falta un response documentado.
+description: Comprueba y modifica contratos HTTP o schemas de eventos antes de regenerar interfaces en cambios autorizados.
+user-invocable: false
 ---
 
-# Contract first
+# Contrato primero
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Localiza fuente, dueño, generador/configuración y rutas derivadas. Comprueba
+request/response, status, media types, required y consumidores afectados.
+Si la interfaz esperada ya existe, explica que es corrección de implementación.
 
-Localiza contrato fuente, repo dueño, generator, configuración y rutas generadas.
-Comprueba request/response, códigos, media types, required y clientes afectados.
-Si el comportamiento esperado ya está documentado, registra que es corrección
-de implementación. Si no está, cambia primero la fuente contractual autorizada.
-Si el contrato vive fuera del workspace prepara diff/instrucciones y registra
-la dependencia; no modifiques archivos derivados para simular el cambio.
+Si cambia interfaz, modifica la fuente autorizada y usa la generación existente
+con el entorno elegido. Revisa diff/compatibilidad; no edites clases derivadas
+manualmente ni actualices generator/dependencias sin necesidad del cambio.
 
-Ejecuta el comando `generate` descubierto/revisado mediante el runner o mecanismo
-existente del repo. Revisa diff de generados y compatibilidad. No cambia versión
-del generator ni dependencias sin necesidad demostrada. Para eventos comprueba
-consumidores y versión de schema por separado del contrato HTTP.
+Si la fuente vive en un repo inaccesible, presenta delta/dependencia en chat
+y continúa tareas independientes; no simules generación. Para eventos revisa
+evolución de schema/consumidores por separado de HTTP. Un response 204 no declara
+un objeto vacío como contenido.
 
-En HTTP 204 documenta response sin content; no añade un schema vacío de objeto.
-Reporta contrato modificado/no requerido, generación y compatibilidad comprobada
-o pendiente. La validación semántica del contrato no se sustituye por compilar.
+Entrega fuente modificada/no requerida, comando, resultado y compatibilidad
+verificada o pendiente. Compilar no demuestra compatibilidad semántica.

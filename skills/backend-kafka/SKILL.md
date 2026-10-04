@@ -1,21 +1,20 @@
 ---
 name: backend-kafka
-description: Implementa o prueba cambios Kafka Java cuando el repositorio usa publicación o consumo de eventos. Úsala para topics, schemas, schemas de notificación o fallos de mensajería confirmados.
+description: Revisa e implementa cambios Java de eventos Kafka y valida schemas, entrega y manejo de fallos cuando ese transporte existe en el flujo.
+user-invocable: false
 ---
 
 # Kafka
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Confirma con POM/código framework, conector y versiones; no deduzcas transporte
+por nombres de integración. Revisa schema/payload, clave, headers, topic/config y
+consumidores. Coordina interfaz con backend-contrato.
 
-Confirma framework/conector y versiones con código/POM. Revisa schema/payload,
-clave, headers, topic por config y consumidores. No asume transporte Kafka por
-el nombre de una integración ni crea schemas a partir de nombres de negocio.
-Para productores distingue confirmación del broker de procesamiento consumidor.
-Para consumidores revisa ack/nack, reintentos, duplicados/idempotencia, orden y
-DLQ según requisitos del flujo; no promete exactly-once de negocio.
+Productor: distingue confirmación del broker de procesamiento consumidor.
+Consumidor: revisa ack/nack, reintentos, duplicados/idempotencia, orden y DLQ
+según requisito; no prometas exactly-once de negocio.
 
-Usa pruebas y dependencias ya aprobadas (stub, in-memory o broker test). No
-impone Docker/Testcontainers cuando no estén habilitados. Registra explícitamente
-qué semántica valida cada prueba. Si necesita configuración externa prepara
-handoff con `backend-config-manual`; no toca Jenkins/Properties.
+Usa dependencias/tests aprobados: stub, in-memory o broker test. No impongas
+Docker/Testcontainers si no están habilitados. Explica semántica validada y
+límites sin infraestructura; compilar no prueba entrega del evento.
+Config externa se atiende con backend-config-manual, sin editar jobs por iniciativa.

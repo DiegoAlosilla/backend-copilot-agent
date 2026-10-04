@@ -1,34 +1,24 @@
 ---
 name: backend-contexto
-description: Entiende un microservicio Java existente o valida su memoria para identificar arquitectura, endpoints, clientes y lugares de cambio. Úsala para diagnóstico o antes de modificar un servicio.
+description: Identifica arquitectura, flujos, contratos y puntos de cambio de un microservicio Java para el diagnóstico inicial del orquestador.
+user-invocable: false
 ---
 
-# Contexto del servicio
+# Contexto del microservicio
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Lee instrucciones del repo y diff inicial. Recupera memoria, revisa su vigencia
+y relee el flujo afectado, incluidos archivos nuevos, eliminados o sin commit.
+Coordina toolchain con backend-entorno.
 
-1. Lee reglas compartidas y `engineering/backend/OPERACION.md`. Inspecciona Git y
-   cambios ajenos. Identifica POM padre/módulos, framework/versiones, Java, Maven,
-   contrato/generador, pruebas unitarias, Karate y configuración real.
-2. Revisa `docs/engineering/service-map.md` y su metadata si existen. Con
-   `backend.py snapshot` compara huellas del código actual y entradas de la memoria;
-   incluye archivos nuevos, eliminados y cambios sin commit. Relee siempre las
-   clases del flujo afectado. Si no hay mapa, crea un resumen inicial basado en
-   código; no una exploración exhaustiva de cada clase.
-3. Traza entrada → lógica → cliente/repositorio → salida. Enumera dependencias
-   HTTP, eventos, Redis y BD únicamente con evidencia; cuenta clientes distintos
-   por interfaces/config, no por número de llamadas. Distingue Channel/Business.
-4. Detecta capas, hexagonal o híbrido por dependencias/imports. No deduzcas patrón
-   solo de nombres de paquetes. Registra convenciones, tests representativos
-   disponibles y comandos que realmente descubre el repo.
-5. Completa `engineering/backend/repository-profile.json`; toolchain personal va en
-   `.assistant-local/backend/toolchain.json`. Confirma perfiles y runners; no uses
-   los paths de otro desarrollador. Ejecuta baseline si aplica.
-   Lee `engineering/backend/ENTORNO.md` si se comparten Java/Maven o hay diferencias
-   con VS Code. Configura el build real y ejecuta `backend.py doctor --repo .`;
-   compara JDK efectivo de Maven con el POM antes de atribuir fallos al código.
+Identifica POM padre/módulos, framework/versiones, Java requerido, contrato fuente,
+generador/rutas derivadas, tests/runners, perfiles y configuración real. Deduce
+arquitectura por imports/dependencias, no solo por nombres de paquetes.
 
-Salida: mapa de flujo con rutas/símbolos, pruebas de referencia, perfil operativo,
-lagunas y contradicciones. Si se pidió solo entendimiento, termina `DIAGNOSED`;
-no implementes ni ejecutes la entrega completa.
+Traza entrada → caso de uso/service → cliente/repositorio → salida con rutas y
+símbolos reales. Distingue UX/Channel de Business y enumera HTTP, Kafka, Redis y
+BD únicamente con evidencia. Revisa patrones y tests representativos existentes.
+Acota exploración al objetivo y amplía cuando una dependencia lo justifique.
+
+Devuelve en el chat flujo, puntos de intervención, comandos, convenciones y
+lagunas. Mermaid en el chat puede aclarar el recorrido. No crees mapas, perfiles
+ni carpetas en el servicio sin petición expresa de documentación/contextualización.

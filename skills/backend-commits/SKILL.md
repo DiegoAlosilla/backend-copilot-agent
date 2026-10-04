@@ -1,31 +1,38 @@
 ---
 name: backend-commits
-description: Evalúa métricas corporativas y prepara o crea commits y PRs Java según alcance pedido, comprobando calidad vigente. Úsala para solo commits, evaluación de score o preparación de entrega.
+description: Propone commits atómicos con archivos, mensajes y validaciones, y espera aprobación de la agrupación antes de crearlos.
+user-invocable: false
 ---
 
-# Commits y PR BACKEND
+# Agrupación revisable y aprobación
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Inspecciona rama, base real y diff staged/unstaged; separa cambios propios/previos.
+No asumas develop. Usa Git nativo `diff --stat`, `diff --numstat` y `log` con base
+pertinente. Incluye tests, generados/docs autorizados sin ocultar volumen ni score
+inventado; volumen por commit y diff neto de PR son métricas distintas.
 
-Lee `engineering/backend/references/COMMITS.md`. “Evaluar/preparar” no ejecuta commit.
-“Haz commit” autoriza commit local del cambio propio; push/PR necesitan pedido
-correspondiente y pueden estar autorizados desde antes. No repetir aprobación.
+Propón grupos con orden, propósito, archivos/hunks, mensaje, validación y
+dependencias. Que cada grupo sea revisable y compile, con tests junto a funcionalidad.
+Delimita hunks propios en archivos compartidos; no separes para manipular métricas.
 
-1. Inspecciona rama, base real y diff staged/unstaged. `backend.py metrics --base`
-   muestra commits, archivos y líneas; interpreta generado y docs por separado
-   sin ocultarlos. No inventa base develop ni reviewer identities.
-2. Para commit de código consulta evidencia actual (`backend.py verify`). Si falta,
-   puede ejecutar calidad requerida sin implementar funcionalidad nueva.
-   Un pedido de solo score puede terminar sin build, explicitando NOT_RUN.
-3. Prepara lista explícita de archivos propios y mensaje en inglés de máximo
-   72 caracteres: type(scope): JIRA-TICKET message. No añade cambios ajenos.
-4. Propone commit atómico y separación por responsabilidad cuando amerite.
-   No fracciona funcionalidad ni omite tests/docs para manipular métricas.
-   No hace amend, squash o rebase de commits publicados sin alcance autorizado.
-5. Si está autorizado ejecuta commit; confirma contenido. Para push/PR usa
-   alcance autorizado y modelo corporativo; mínimo tres revisores reales según
-   política del archivo original. Si faltan nombres deja checklist pendiente.
+Convención: `type(scope): JIRA-TICKET message`, inglés/presente simple, ≤72 caracteres.
+Usa ticket real o pregunta si es obligatorio y falta. Objetivo 1–2 commits;
+>4 amerita revisar tamaño. Promedio <15 archivos y <100 líneas por commit;
+PR ≤50 líneas ideal, 51–300 aceptable y >300 invita a evaluar separación.
+Son métricas de revisión, no gates funcionales; no fracciones un cambio coherente.
 
-Salida: métricas actual/proyección, quality gate, mensaje/lista de archivos,
-acciones ejecutadas y pendientes. No bloquea el cierre local por falta de push.
+Presenta propuesta concreta y pregunta en chat: «¿Apruebas esta agrupación de
+commits o deseas cambiarla?». Espera antes de stage/commit aunque al inicio se
+haya pedido hacer commits. Reutiliza aprobación de los mismos grupos sin cambios
+sustanciales. Cancelación, silencio o login no aprueban la propuesta.
+
+Tras aprobación verifica calidad vigente, selecciona rutas/hunks explícitos y
+revisa staged. No uses `git add .`, incluyas staged ajeno ni lo alteres. Si la
+selección se mezcla con trabajo previo, consulta cómo resolverlo antes del commit.
+Crea commits autorizados y confirma SHA/contenido. No reescribas historia publicada.
+
+Push/PR requieren alcance adicional; aprobación de agrupación no publica. Usa
+backend-entorno para acceso/host. PR respeta plantilla y mínimo tres revisores
+reales del equipo; consúltalos si faltan. No despliegues por este flujo.
+Entrega propuesta/acciones, métricas, calidad y pendientes; el diff puede probarse
+y revisarse antes de aprobar commits.

@@ -1,36 +1,33 @@
 ---
 name: backend-calidad
-description: 'Ejecuta y verifica compuertas locales con reportes actuales: unitarias, Karate, Checkstyle, JaCoCo y Maven clean install. Úsala para cierre completo o validación del build, sin publicar cambios.'
+description: Valida cambios Java con build final, suites, Checkstyle y JaCoCo del proyecto y comunica evidencia vigente o gates pendientes.
+user-invocable: false
 ---
 
-# Calidad con evidencia
+# Calidad con herramientas del servicio
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Descubre comandos/gates en POM/perfiles/CI y aplica CONTEXTO_BACKEND. Conserva
+política acordada: INSTRUCTION global mínimo 95%, cero tests omitidos y cero
+violaciones Checkstyle. Política corporativa más exigente prevalece; excepciones
+explícitas llevan origen/alcance. No amplíes exclusiones ni rebajes umbrales.
 
-Lee `engineering/backend/OPERACION.md` y política; revisa profile y toolchain.
-Ejecuta comandos mediante `engineering/backend/scripts/backend.py run` con un run ID común.
-Comandos son arrays revisados, sin shell interpolado. Si full build ejecuta las
-suites y genera todos los reportes, declara sus gates en profile y evita repetir
-comandos sin motivo. Si Karate corre separado, ejecuta build final primero y
-luego Karate, evitando que clean borre su evidencia.
+Tras cambios Java ejecuta Maven/wrapper `clean install` con settings/perfiles
+aplicables, sin omisiones. Comprueba qué suites/gates ejecuta realmente; completa
+los restantes con objetivos/runners existentes sin inventar perfiles. Checkstyle
+exige `check` o binding que falle, no solo reporte. Si build cubre un gate, no
+repitas sin motivo. Karate separado va después para que clean no borre evidencia.
 
-Build final incluye clean/install sin skips. Checkstyle requiere objetivo check
-o binding corporativo que realmente bloquee y cubra tests; reportar checkstyle
-no basta. Cobertura usa INSTRUCTION 95% y XML válido con contador root; BRANCH
-se informa separado. No sumes reportes solapados ni cuentes doble generado.
-Registra alcance/exclusiones existentes y no las amplíes por cuenta del agente.
+Relaciona salida/comando con reportes actuales Surefire/Failsafe/Karate,
+Checkstyle y JaCoCo. Cobertura INSTRUCTION = covered / (covered + missed) del
+alcance global vigente: contador raíz o módulos no solapados, sin doble conteo.
+Informa BRANCH y exclusiones aparte. Reportes viejos/ausentes, cero tests,
+contador cero o suite focalizada no acreditan cobertura global. Usa lectura/
+cálculo del editor sin generar evaluadores auxiliares.
 
-Ejecuta `backend.py verify`. Corrige hasta tres iteraciones justificadas. Si cambian
-entradas técnicas repite gates afectados con nueva huella. Reportes ausentes,
-viejos, cero tests, tests omitidos, command failure o formatos desconocidos no
-son PASS. CI y Sonar corporativos se reportan aparte; nunca los inventes.
+Corrige fallos del cambio y repite checks afectados. Consulta bloqueos de entorno
+con backend-entorno sin reintentar idénticamente. Conserva fallos previos sin
+tocar cambios ajenos para forzar verde. CI/Sonar/producción se reportan aparte.
 
-El script verifica archivos/contadores/huellas, no calidad semántica de tests ni
-compatibilidad de contrato. Revisa esos aspectos y presenta evidencia humana.
-Solo usa LOCAL_VERIFIED cuando gates locales requeridos pasan y aceptación está
-cubierta; mantén pendientes de config manual/CI y revisión final por separado.
-Dentro del agente completo, entrega este resultado al orquestador: debe ejecutar
-`backend.py workflow-close` después de memoria/entrega antes de cerrar el cambio.
-El PASS de calidad por sí solo no acredita las demás fases. En uso individual,
-reporta el alcance solicitado sin activar el flujo completo.
+En auditoría/plan/docs justifica validación pertinente y gates no ejecutados;
+no modifica código para completar fases. Entrega gate, comando/reporte, resultado
+y pendiente en chat. Valida localmente solo con aceptación y gates aplicables verdes.

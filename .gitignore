@@ -1,7 +1,2 @@
-__pycache__/
-*.py[cod]
-.assistant-local/
 *.zip
 *.bundle
-.venv/
-engineering/backend/runs/

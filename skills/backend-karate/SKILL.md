@@ -1,26 +1,23 @@
 ---
 name: backend-karate
-description: Crea o ajusta pruebas de componente Karate y verifica runners y resultados reales. Úsala para features, escenarios HTTP o regresión de un flujo; puede ejecutarse sin el agente completo.
+description: Crea y ejecuta escenarios Karate de componente/HTTP usando runners, perfiles, mocks y reportes reales del microservicio.
+user-invocable: false
 ---
 
 # Karate de componente
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Detecta versión, runner, perfil, tags, karate-config, mocks y reportes. No asumas
+que Maven ejecuta Karate ni instales otra versión. Si hay otra suite de componente,
+informa la alternativa sin afirmar Karate aprobado. Si es gate obligatorio y
+falta runner/infraestructura, déjalo pendiente y consulta la decisión necesaria.
 
-Detecta versión, runner, perfil, tags, karate-config, mocks y formato real de
-reportes. Mantén convenciones; no instala otra versión ni asume que Maven lo
-ejecuta. Usa stubs deterministas del Business para reproducir el escenario.
-Verifica códigos esperados, payload/schema y errores; un status 500 inesperado
-falla aunque haya conectividad. Para 204 verifica ausencia de contenido con las
-assertions compatibles con el runner y un control HTTP de cuerpo cuando haga
-falta; no esperes `{}` o JSON null.
+Usa stubs deterministas para reproducir flujo. Verifica status, payload/schema,
+headers pertinentes y errores vecinos. Un 500 inesperado falla aunque haya
+conectividad. En 204 comprueba vacío con assertions compatibles y bytes HTTP
+cuando haga falta.
 
-Ejecuta comando `karate` con runner y reportes explícitos del perfil. Registra
-escenarios descubiertos, ejecutados, fallidos y omitidos. Soporte automático:
-JUnit XML o summary Karate JSON con counters documentados en OPERACION.md.
-Si otro formato no está soportado conserva evidencia y registra revisión manual;
-no declara compuerta verificada por el script.
-
-Si falta infraestructura sigue creando/revisando escenarios y declara ejecución
-bloqueada. No atribuye éxito de componente a un mock unitario del cliente.
+Ejecuta runner descubierto con entorno confirmado y lee reportes actuales:
+escenarios descubiertos/ejecutados/fallidos/omitidos. Cero escenarios o compilar
+el runner no demuestran comportamiento. Sin infraestructura conserva escenarios
+y reporta ejecución pendiente. Mock unitario no acredita límite HTTP.
+Usa rutas normales de tests/reportes, sin un runtime de pruebas del agente.

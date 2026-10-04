@@ -1,25 +1,42 @@
 ---
 name: backend-memoria
-description: Actualiza memoria técnica, diagramas y bitácora por ticket después de un cambio Java, o valida documentación al reanudar. No reconstruye el repositorio completo si el delta es acotado.
+description: Reutiliza entorno y contexto entre ejecuciones fuera del microservicio y escribe documentación técnica solo cuando se solicita expresamente.
+user-invocable: false
 ---
 
-# Memoria compartida
+# Contexto sin ensuciar el servicio
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+`CONTEXTO_BACKEND` es contexto lógico reutilizable, no una variable de proceso
+que sobreviva por sí sola a un chat nuevo. Separa preferencias/rutas del host,
+hechos por servicio y estado temporal. Identifica repos por raíz normalizada y
+remote, sin mezclar proyectos/hosts. Sanitiza URLs de remotes: nunca persistas
+credenciales incrustadas ni parámetros sensibles.
 
-Actualiza `docs/engineering/service-map.md` y expediente `changes/<ticket>` con
-plantillas en `engineering/backend/templates`. Registra fuentes/rutas/símbolos y
-lagunas. Usa ADR separado solo para decisiones duraderas con alternativas.
-Diagrama estable sin colores históricos; diagrama del ticket puede marcar impacto.
+Usa memoria nativa si existe: usuario para toolchain/preferencias, repositorio
+para hechos del servicio y sesión para plan/avances/validaciones/acción pendiente.
+`/memories/` son rutas virtuales de esa herramienta; no las crees en el proyecto
+ni supongas que existen en disco.
 
-Guarda metadata de `backend.py snapshot` en `service-map.meta.json` como base de
-inspección, con fecha y referencia de PR revisado cuando exista. Snapshot es
-inventario/huella, no aprobación. No escribe el SHA del futuro commit documental
-en sí mismo. Compara archivos/hash antes de reutilizar; mapa aprobado no aprueba
-otro cambio. Relee ruta afectada y actualiza solo secciones invalidadas.
+Sin persistencia nativa, usa un único archivo personal
+`~/.copilot/backend-java-context.md` fuera del servicio con herramientas de lectura/
+edición. Conserva secciones de otros repos; guarda entorno, convenciones y estado
+breve útil, sin logs/expedientes por fase. No copies el archivo al plugin ni lo
+distribuyas. Si no puedes escribir fuera, conserva contexto en chat e informa
+que no persistirá entre chats; no crees fallback dentro del microservicio.
 
-Expediente conserva plan→resultado, prueba de aceptación, decisiones, resumen de
-gates y config handoff. Logs crudos y evidencia ejecutable permanecen locales/CI;
-docs llevan extractos sanitizados/enlaces. Si se pidió solo documentación, termina
-SCOPED_TASK_DONE y no afirma que el código pasó tests.
+Lee antes de reutilizar, relee código afectado y actualiza solo entradas invalidadas.
+Registra fecha/origen/confirmado-detectado-pendiente. No guardes tokens, contraseñas,
+contenido de settings o payloads de clientes. No guardes aprobación para commits
+futuros: solo propuesta aprobada vigente de esta tarea; al reanudar compara diff/checks.
+
+## Documentación expresa
+
+«Documenta este microservicio» o «crea su contexto técnico» autoriza artefactos.
+«Revisa», «audita» o «usa este contexto» no los autoriza. Reutiliza ubicación
+documental o pregunta destino antes de crear otra. Incluye flujo/arquitectura,
+fuentes/rutas, dependencias, contratos, comandos y lagunas; Mermaid si aporta.
+Actualiza por delta, sin datos personales, perfiles de ejecución ni scripts.
+
+Al cerrar resume plan→resultado, tests, decisiones, configuración y siguiente
+acción en chat/memoria. No publiques mapas/bitácoras automáticamente.
+[Memoria de VS Code](https://code.visualstudio.com/docs/agents/run/memory).

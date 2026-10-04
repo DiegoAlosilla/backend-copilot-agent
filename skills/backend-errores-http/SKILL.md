@@ -1,29 +1,25 @@
 ---
 name: backend-errores-http
-description: Diagnostica y corrige la traducción de respuestas Business a HTTP en un servicio UX o Channel, incluyendo el caso específico que debe devolver 204 vacío en lugar de error genérico.
+description: Diagnostica y corrige traducciones Business a HTTP en UX/Channel, incluida ausencia de negocio con 204 sin contenido.
+user-invocable: false
 ---
 
 # Traducción Business → UX
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Obtén condición exacta: endpoint, HTTP Business, código/payload o excepción y regla
+del contrato/desarrollador. Traza REST client, decoding, response exception mapper,
+service/use case, mapper global y Resource/Controller. En Mutiny revisa recovery
+y preservación de causa.
 
-Lee `engineering/backend/references/CASO-204.md` para el piloto 204. Es una guía de
-investigación, no una regla universal “404 → 204”.
+Reproduce con respuesta real sanitizada y fixture/stub. Determina dónde se pierde
+la condición y corrige el punto coherente con el repo. No conviertas todo 404,
+NotFoundException o Exception en 204. Auth, timeout, 5xx, payload inválido y errores
+de otros orígenes conservan mapeo contractual. Coordina contrato si cambia interfaz.
 
-1. Obtén endpoint y condición exacta: HTTP Business, código/payload o excepción.
-   Traza REST client, response exception mapper, service/use case, mapper global
-   y Resource. Revisa Mutiny si es reactivo y dónde el fallo cambia de tipo.
-2. Confirma regla funcional con usuario/contrato: solo el escenario identificado
-   se convierte al status esperado. No convierte auth, timeout, 5xx, payload
-   inválido ni cualquier NotFoundException de otro origen en éxito vacío.
-3. Reproduce con fixture/stub y test antes de cambiar. Elige el punto de mapeo
-   del repo con menos impacto. Mantén observabilidad y manejo de otros errores.
-4. Si el contrato no contempla el response requerido usa `backend-contrato` primero.
-   Código generado no se modifica manualmente.
-5. Verifica status y ausencia de body en el límite HTTP; una entidad null en
-   unitarias no basta. Prueba caso encontrado, ausencia reconocida y errores
-   distintos al caso. Mantén encabezados corporativos aplicables.
+En 204 verifica status y cero bytes en el límite HTTP, no solo entidad null en
+unitarias. Cubre ausencia reconocida, datos encontrados y errores vecinos;
+`{}`, `[]` o JSON `null` no son ausencia de cuerpo. Conserva observabilidad/headers.
 
-Salida: causa demostrada, punto de cambio, pruebas de traducción y regresión;
-estado de cobertura/build se reporta separado si se pidió solo diagnóstico.
+Decide tests fallidos según aceptación, no descartándolos como desactualizados.
+Sin señal real de Business, entrega hipótesis o corrección defensiva con su
+límite; no declares resuelto el incidente sin evidencia representativa.

@@ -1,23 +1,27 @@
 ---
 name: backend-plan
-description: Prepara un plan verificable de cambio Java con matriz de contrato, clases, métodos, configuración y tests. Úsala para planificar; en modo solo plan no modifica lógica.
+description: Presenta hipótesis, aceptación, impacto, ejecución y validaciones antes de los cambios del flujo backend-java.
+user-invocable: false
 ---
 
-# Plan de cambio
+# Plan visible antes de ejecutar
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Siempre presenta el plan en el chat, también en soporte/auditoría. Separa hechos
+de sospechas y señala información pendiente que pueda cambiar el enfoque.
+Define resultado observable, aceptación y alcance autorizado.
 
-Usa `engineering/backend/templates/CAMBIO.md`. Define comportamiento actual, esperado,
-aceptación y alcance. Por cada cambio identifica ruta y símbolo real, razón y test.
-Marca archivos propuestos como nuevos; no inventes métodos en clases existentes.
-Separa cambio obligatorio de mejoras opcionales y preserva arquitectura existente.
+Incluye tabla breve de ruta/símbolo, cambio, motivo y prueba. Marca archivos
+propuestos como nuevos. Planifica contrato/generación si cambia interfaz, lógica,
+unitarias, componente, configuración manual y calidad; justifica lo no aplicable.
 
-Planifica contrato/generación cuando aplique, lógica, pruebas y config manual.
-Incluye diagnóstico antes de corrección y regresión de escenarios vecinos.
-Estima riesgos por dependencias y cobertura baseline, no por promesas de duración.
-Si baseline ya incumple calidad, informa costo y bloqueo; no baja umbrales.
+Explica: «La ejecución implica <cambios>, <pruebas>, <build y gates> y una propuesta
+de commits agrupados para tu aprobación». Incluye riesgos/dependencias y cómo
+separar fallos previos del defecto. No promete tiempos ni añade mejoras ajenas.
 
-Diagramas: dependencias externas e internos para ubicación; secuencia para el flujo
-cuando aclara errores/orden. Color ámbar = modificado, verde = nuevo, con leyenda;
-detalle de métodos va en matriz de impacto. Si se pidió solo plan, termina aquí.
+Presenta el plan y procede con modificaciones ya solicitadas. Una auditoría
+autoriza análisis: entrega diagnóstico/plan y espera solicitud de implementar.
+Una decisión funcional ambigua requiere respuesta antes del cambio dependiente;
+continúa trabajo independiente. Actualiza el plan cuando cambie la evidencia.
+
+No crees plan.md ni carpetas auxiliares. La aprobación de agrupación se pide
+al entregar el diff y sus validaciones concretas, no al iniciar el trabajo.

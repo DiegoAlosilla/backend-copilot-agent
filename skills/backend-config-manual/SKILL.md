@@ -1,30 +1,26 @@
 ---
 name: backend-config-manual
-description: Prepara un traslado manual de configuración desde un cambio Java hacia Config Maps DEV/CERT/PROD, con claves y valores por ambiente. En el MVP no edita repositorios externos ni ejecuta Jenkins.
+description: Presenta en el chat el delta de configuración compartida por ambiente para traslado manual a Config Maps y Properties.
+user-invocable: false
 ---
 
-# Configuración — handoff manual
+# Configuración por ambiente
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Detecta configuración/perfiles reales; YAML requiere soporte del proyecto.
+Clasifica claves: compartidas, locales, secretos o desconocidas. No traslades
+mocks, credenciales ni switches de tests. Secretos son referencias al gestor.
 
-Lee `engineering/backend/references/CONFIG-MAPS.md` y usa
-`engineering/backend/templates/CONFIG-HANDOFF.md` en el expediente del cambio.
+Por clave compartida presenta en chat consumidor, tipo, alta/cambio/baja, valores
+DEV/CERT/PROD o pendientes, destino confirmado y prueba de carga efectiva. Si no
+cambia config compartida, justifica que no requiere traslado. No crees handoff
+ni carpetas de configuración del agente.
 
-Detecta configuración real de Quarkus y perfil local; YAML requiere soporte del
-proyecto. Clasifica cada cambio: compartido por ambiente, exclusivo local, secreto
-o desconocido. Solo prepara traslado de los compartidos; secretos son referencias
-al gestor corporativo, no literales. URLs locales, mocks y switches de seguridad
-de test no pasan a ambientes de la organización.
+Recorrido acordado manual: rama feature de Config Maps, carpeta real del ambiente,
+Jenkins que traslada a Properties, despliegue Azure/GitOps. Confirma nombres/rutas
+y delivery cuando se necesiten. Prepara delta/checklist sin editar Config Maps/
+Properties, ejecutar Jenkins o promover releases. Config del propio servicio se
+modifica únicamente dentro del cambio solicitado.
 
-Por clave compartida registra consumidor, tipo, valor DEV/CERT/PROD o pendiente,
-operación (alta/modificación/baja), archivo destino confirmado o aún por confirmar
-y prueba necesaria. Presencia compatible no significa valores idénticos.
-Documenta rama feature, directorios desarrollo/certificación/producción y delivery
-con nombres reales cuando se proporcionen. No inventa formato de delivery ni
-Groovy; solicita esa estructura cuando sea necesaria para una fase futura.
-
-Si no hay cambios compartidos registra “no requerido”. Si faltan valores por
-ambiente deja pendientes, sin bloquear unitarias/local. Entrega guía para que el
-dev copie/edite únicamente el delta, ejecute job del ambiente y confirme versión
-en Properties. Estado `MANUAL_PENDING` hasta evidencia del desarrollador.
+Valores externos faltantes dejan traslado pendiente sin bloquear tests locales
+independientes. Al recibir evidencia registra ambiente, SHA origen/destino,
+imagen/release y carga efectiva; job verde no demuestra recepción de configuración.

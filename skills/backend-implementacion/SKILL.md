@@ -1,24 +1,22 @@
 ---
 name: backend-implementacion
-description: Implementa un cambio acotado en backend Java Spring o Quarkus siguiendo arquitectura y patrones del repo. Úsala tras entender la ruta de cambio y aceptación.
+description: Implementa cambios Java autorizados en Quarkus o Spring respetando arquitectura, convenciones y regresiones del servicio.
+user-invocable: false
 ---
 
 # Implementación Java
 
-Si estás usando el plugin y faltan recursos del microservicio, usa primero
-[backend-preparar-repo](../backend-preparar-repo/SKILL.md); conserva el modo individual.
+Parte del plan/aceptación. Para corregir reproduce el defecto con prueba pertinente
+antes del arreglo cuando sea viable. Preserva cambios previos y toca solo rutas
+necesarias. Mantén dependencias entre capas/puertos/adaptadores, librerías, manejo
+de errores y convenciones; no migres arquitectura como efecto lateral.
 
-Implementa tareas del plan con diffs pequeños y pruebas durante la iteración.
-Preserva imports/dependencias entre capas o puertos/adaptadores. No migra la
-arquitectura como efecto lateral. Usa librerías y manejo de errores existentes.
-Reutiliza patrones del servicio cuando sean correctos; no copies código de
-referencia incompatible con versiones, contrato o reglas locales.
+Respeta cabeceras/atribución exigidas sin inventar autores/organizaciones. Evita
+capturas genéricas que oculten causas, bloquear flujos reactivos, timeouts
+arbitrarios y logs sensibles. Maneja recursos, vacíos y excepciones con semántica
+contractual. Reutiliza referencias solo si son compatibles con el servicio.
 
-Evita capturas genéricas que oculten fallos, bloquear pipelines reactivos,
-timeouts nuevos arbitrarios y log de datos sensibles. Maneja recursos, estados
-vacíos y excepciones con la semántica acordada. Nuevas clases usan cabecera BACKEND
-definida en `engineering/backend/ESTANDAR-JAVA.md`.
-
-Tras cada tarea corre tests relevantes y revisa diff/Checkstyle. Si la corrección
-demanda configuración utiliza `backend-config-manual`; si hay evento utiliza `backend-kafka`.
-No declarar cambio terminado antes de `backend-calidad` en el flujo completo.
+Itera con tests pertinentes y revisa diff/estilo. Coordina contrato, HTTP, Kafka
+y configuración con sus skills. No crees scripts ni expedientes auxiliares.
+Devuelve causa atendida, cambios y resultados al orquestador; el arreglo sigue
+pendiente hasta la calidad aplicable.

@@ -1,8 +1,14 @@
 {
   "name": "backend-java",
-  "description": "Agente y skills para backend Java con calidad verificable y configuración manual por ambiente.",
-  "version": "0.5.0",
+  "description": "Orquestador Java para soporte, auditorías e implementaciones con skills, plan, validación y aprobación de commits.",
+  "version": "0.7.0",
   "agents": "./agents",
   "skills": "./skills",
-  "keywords": ["java", "quarkus", "karate", "backend", "copilot"]
+  "keywords": [
+    "java",
+    "quarkus",
+    "karate",
+    "backend",
+    "copilot"
+  ]
 }
