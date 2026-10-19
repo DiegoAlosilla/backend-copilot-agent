@@ -26,8 +26,11 @@ commits o deseas cambiarla?». Espera antes de stage/commit aunque al inicio se
 haya pedido hacer commits. Reutiliza aprobación de los mismos grupos sin cambios
 sustanciales. Cancelación, silencio o login no aprueban la propuesta.
 
-Tras aprobación verifica calidad vigente, selecciona rutas/hunks explícitos y
-revisa staged. No uses `git add .`, incluyas staged ajeno ni lo alteres. Si la
+Tras aprobación verifica calidad vigente, matriz AC y evidencia contra el diff
+actual. Si cambiaron insumos,
+revalida antes de crear los commits; aprobar grupos no aprueba gates fallidos.
+Después selecciona rutas/hunks explícitos y revisa staged. No uses `git add .`,
+incluyas staged ajeno ni lo alteres. Si la
 selección se mezcla con trabajo previo, consulta cómo resolverlo antes del commit.
 Crea commits autorizados y confirma SHA/contenido. No reescribas historia publicada.
 

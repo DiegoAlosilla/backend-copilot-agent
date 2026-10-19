@@ -1,7 +1,7 @@
 {
   "name": "backend-java",
-  "description": "Orquestador Java para soporte, auditorías e implementaciones con skills, plan, validación y aprobación de commits.",
-  "version": "0.7.0",
+  "description": "Orquestador Java con aceptación trazable, checkpoints, verificación Maven y evaluación reproducible del agente.",
+  "version": "0.8.0",
   "agents": "./agents",
   "skills": "./skills",
   "keywords": [

@@ -1,6 +1,6 @@
 # Backend Java Agent
 
-Versión **0.7.0**. Un agente orquestador y **15 skills de instrucciones** para
+Versión **0.8.0**. Un agente orquestador y **15 skills** para
 soporte, auditorías e implementaciones Java con Quarkus/Spring. El desarrollador
 selecciona `backend-java` en Copilot y describe lo que necesita.
 
@@ -11,14 +11,21 @@ backend-copilot-agent/
   plugin.json
   agents/backend-java.agent.md
   skills/<capacidad>/SKILL.md
+  skills/backend-calidad/scripts/       # verificador opcional Maven/reportes
+  skills/backend-calidad/references/    # política por servicio y uso en CI
+  evaluations/                         # protocolo de piloto del agente
+  scripts/Measure-AgentEvaluation.ps1
+  tests/Test-Harness.ps1
   README.md
   CHANGELOG.md
 ```
 
 Las reglas comunes están en el agente; cada skill contiene sus criterios propios.
-No hay instaladores, ejecutores ni evaluadores del paquete. No requiere Python,
-PowerShell como dependencia, pip, Node ni Docker. Las validaciones usan el JDK,
-Maven/wrapper, Git y herramientas existentes del microservicio.
+El editor conserva el runtime del agente. Las validaciones usan el JDK,
+Maven/wrapper, Git y herramientas existentes del microservicio. El paquete añade
+un verificador opcional para PowerShell 5.1/7 y un medidor de evaluaciones humanas,
+sin módulos externos, Python, Node ni Docker. Si no puede ejecutar scripts, el
+agente comprueba los mismos gates manualmente y declara el método y sus límites.
 
 ## Dos opciones de instalación
 
@@ -62,7 +69,8 @@ Con el explorador de archivos:
 
 1. Copia `agents/backend-java.agent.md` a `~/.copilot/agents/`.
 2. Copia las 15 carpetas `skills/backend-*` a `~/.copilot/skills/`, conservando
-   cada `SKILL.md`. Integra las carpetas sin reemplazar otras personalizaciones.
+   cada `SKILL.md` y sus subcarpetas `scripts/` y `references/` cuando existan.
+   Integra las carpetas sin reemplazar otras personalizaciones.
 3. Abre un chat nuevo y selecciona `backend-java`.
 
 No copies `plugin.json`, README o CHANGELOG a `.copilot`. Para actualizar reemplaza
@@ -93,7 +101,8 @@ no una variable global del sistema. Las selecciones vigentes se reutilizan y se
 revalida lo que cambie entre proyectos/hosts. No se almacenan credenciales.
 [Memoria de VS Code](https://code.visualstudio.com/docs/agents/run/memory).
 
-Plan y evidencias permanecen en chat/memoria. El agente no crea `.engineering`,
+Plan y matriz de aceptación permanecen en chat/memoria. Si se usa el verificador,
+su política y evidencia JSON se guardan fuera del servicio. El agente no crea `.engineering`,
 `.assistant-local`, perfiles, bitácoras o scripts dentro del microservicio, ni
 altera ignores para ocultarlos. Solo una petición expresa de documentar/crear
 contexto técnico genera documentación en el destino acordado. Maven conserva sus
@@ -160,13 +169,58 @@ Checkstyle, respetando política más exigente o excepciones expresas del servic
 Karate/Kafka/sanity se aplican según requisitos e infraestructura reales.
 
 Estas son instrucciones que dirige Copilot; no incluyen un runtime que imponga
-el flujo. Los resultados se respaldan con comandos y reportes reales del proyecto.
+todo el flujo. El verificador impone los gates declarados al ejecutarse y devuelve
+exit 1 si no puede acreditarlos. Los resultados se respaldan con comandos y
+reportes reales del proyecto; su alcance y significado funcional requieren revisión.
 La carga y el comportamiento en el Copilot corporativo deben comprobarse en el
 piloto; un README o una revisión estática no demuestran esa ejecución.
+
+## Harness sobre el flujo SDD
+
+- Cada criterio AC vincula especificación/contrato → comportamiento → test →
+  resultado y evidencia. Cobertura alta no sustituye aceptación funcional.
+- El checkpoint conserva alcance, fase, siguiente acción, diff y bloqueos en la
+  memoria existente. Al reanudar se invalidan los resultados afectados por cambios.
+- El [verificador](skills/backend-calidad/references/harness.md) ejecuta Maven y
+  verifica JUnit, Checkstyle y JaCoCo actuales, incluyendo aceptación y hashes de
+  fuentes/reportes. `-VerifyOnly` detecta evidencia invalidada sin ejecutar el build.
+- Los [ocho casos de evaluación](evaluations/README.md) permiten comparar versiones
+  con el mismo modelo y fixture. El medidor calcula resultados registrados por un
+  revisor; no simula una ejecución de Copilot ni atribuye eficacia sin un piloto.
+
+La política de ejemplo se adapta al POM/CI real y a todos los módulos/suites del
+servicio. Los reportes custom o gates externos pendientes no se convierten en
+aprobados. No se instala soporte en el microservicio ni se altera su CI sin una
+adopción específica; la guía explica cómo convertir el comando en check obligatorio.
+
+Para comprobar las herramientas del paquete con fixtures sintéticos:
+
+```powershell
+pwsh -NoProfile -File ./tests/Test-Harness.ps1
+```
+
+Prueba opcional con Java 17+, Git y Maven reales (descarga artefactos públicos
+en un repositorio Maven temporal, con settings vacíos y sin usar credenciales):
+
+```powershell
+pwsh -NoProfile -File ./tests/Test-MavenIntegration.ps1
+```
+
+Usa un proyecto Java sintético, no un microservicio BCP. No acredita HTTP real
+ni el comportamiento del agente. Requiere una política del host que permita scripts.
+
+El workflow `.github/workflows/harness.yml` comprueba esas herramientas en el
+repositorio del paquete. Su ejecución remota y la protección de ramas solo se
+acreditan tras publicar y verificar GitHub; no prueban un microservicio bancario.
+Los resultados locales y sus límites están en [VALIDATION.md](VALIDATION.md).
 
 ## Migración desde versiones anteriores
 
 Actualiza agente y skills por una de las dos opciones, y abre un chat nuevo.
+Desde 0.7.0 copia también los recursos de `backend-calidad`; conservar solo su
+`SKILL.md` deja el verificador inaccesible. Los evaluadores del paquete son
+opcionales para el mantenedor y no se copian al servicio. No instales dependencias
+ni cambies políticas de ejecución corporativas para habilitarlos.
 En instalación por archivos retira únicamente la antigua skill
 `backend-preparar-repo` del paquete; conserva personalizaciones ajenas.
 Deshabilita duplicados del agente anterior para evitar que sus reglas se mezclen.

@@ -12,6 +12,10 @@ donde corresponda; no los impongas a CDI/@QuarkusTest. Mantén matchers tipados 
 utilitarios existentes.
 
 Cubre camino feliz, errores y límites relevantes, especialmente la regresión.
+Vincula cada escenario con su criterio AC del plan. Comprueba que una regresión
+falle con la implementación defectuosa cuando sea viable demostrarlo sin alterar
+trabajo ajeno; explica si no se pudo. No atribuyas aceptación a una assertion que
+solo reproduce el mock o verifica existencia.
 Verifica valores/estado y tipo/código/mensaje de excepciones; evita mockear toda
 la lógica o assertions solo de existencia. Conserva estilo/cabeceras en tests.
 

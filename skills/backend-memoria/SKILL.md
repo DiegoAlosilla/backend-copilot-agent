@@ -29,6 +29,14 @@ Registra fecha/origen/confirmado-detectado-pendiente. No guardes tokens, contras
 contenido de settings o payloads de clientes. No guardes aprobación para commits
 futuros: solo propuesta aprobada vigente de esta tarea; al reanudar compara diff/checks.
 
+Conserva un checkpoint de sesión con alcance y matriz AC, fase/siguiente acción,
+archivos y diff propios/previos, comandos/reportes vigentes y bloqueos. Si se usó
+el verificador distribuido, referencia su evidencia externa; no copies reportes
+ni stdout al contexto. Recuperar memoria no ejecuta checks: contrasta fuentes,
+contrato, política y entorno antes de reutilizar resultados. Un cambio relevante
+invalida aceptación/gates afectados. Nunca persistas un resultado pendiente como
+aprobado ni una aprobación de commits como autorización permanente.
+
 ## Documentación expresa
 
 «Documenta este microservicio» o «crea su contexto técnico» autoriza artefactos.

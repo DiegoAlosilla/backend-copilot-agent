@@ -22,7 +22,8 @@ inspecciona `git status` y diff antes de editar.
   código. Una corrección sí autoriza implementar y probar tras presentar el plan.
 - Usa herramientas del editor y comandos nativos del proyecto: Git, Java,
   Maven/wrapper y plugins existentes. No instales runtimes auxiliares ni crees
-  ejecutores, instaladores, evaluadores o scripts propios.
+  ejecutores ad hoc en el microservicio. El verificador opcional distribuido con
+  backend-calidad se ejecuta desde el paquete con PowerShell ya disponible.
 - Mantén plan, resultados y pendientes en chat/memoria del editor. No crees
   carpetas auxiliares, expedientes, perfiles o bitácoras dentro del microservicio;
   tampoco modifiques `.gitignore` o `.git/info/exclude` para ocultarlos. Fuentes,
@@ -74,11 +75,40 @@ para iterar, no reemplazan el build final. No rebajes gates ni ocultes fallos
 previos. Distingue hipótesis/causa demostrada y código local/versión desplegada.
 Si cambia código/configuración después de validar, repite los checks afectados.
 
+## Contrato de ejecución y aceptación
+
+Usa la especificación existente como fuente y asigna ids estables AC-01, AC-02
+a los criterios del pedido. Mantén en chat una matriz: id, requisito/origen,
+prueba observable, archivo/test y resultado/evidencia. No inventes una spec ni
+crees expedientes. Cobertura alta o compilar no prueban aceptación funcional.
+
+Conserva un checkpoint breve en memoria de sesión: objetivo/alcance, criterios,
+fase actual, siguiente acción, fuentes/archivos revisados, diff propio/previo,
+comandos/resultados y bloqueos. Actualízalo al terminar una fase o interrumpir.
+Al reanudar relee diff, contrato y entorno afectados antes de reutilizarlo;
+invalida evidencia si cambiaron código, tests, configuración, política, perfiles
+o dependencias relevantes. Una fase incompleta no se convierte en aprobada por
+resumir el contexto. Reintenta tras una corrección o nueva evidencia; no repitas
+el mismo comando fallido indefinidamente ni cambies requisitos para cerrar.
+
+En calidad usa el verificador distribuido si PowerShell está disponible y los
+reportes del servicio son compatibles. Descubre primero política, comandos y
+alcance reales; su JSON PASS solo acredita los gates declarados. Un gate omitido,
+fallido o no soportado queda pendiente aunque el resto esté verde. Sin verificador
+realiza comprobación manual explícita con las mismas evidencias; distingue el
+método y no afirmes enforcement automático. CI obligatoria solo con pipeline y
+protección de rama comprobados.
+
 ## Cierre y commits
 
 Entrega cambios por archivo, aceptación, comandos/resultados, gates pendientes
 y configuración manual. Usa `VALIDADO LOCALMENTE`, `VALIDACIÓN PENDIENTE` o
 `DIAGNÓSTICO Y PLAN ENTREGADOS` según evidencia real. No inventes CI/Sonar/producción.
+Incluye la matriz AC y el checkpoint pendiente. `VALIDADO LOCALMENTE` requiere
+todos los criterios y gates aplicables aprobados con evidencia vigente; cualquier
+pendiente conserva `VALIDACIÓN PENDIENTE`. La evaluación del comportamiento del
+agente es independiente de las pruebas del servicio y no se ejecuta por defecto
+durante una corrección.
 
 Antes de stage/commit presenta grupos numerados con propósito, archivos/hunks,
 mensajes y validación. Pregunta: «¿Apruebas esta agrupación de commits o deseas
